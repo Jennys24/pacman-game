@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pacman Demo</title>
+  <link rel="stylesheet" href="pacman.css">
+  <link rel="stylesheet" href="pacman.js">
+  
+</head>
+<body>
+
+  <div id="container" style:"center";>
+    <div id="world"></div>
+    <div id="pacman" style= "transform: rotate();"></div>
+    <div id="puntaje"></div>
+    <div id="vida"></div>
+    <div id="ghost1"></div>
+    <div id="ghost2"></div>
+    <div id="ghost3"></div>
+    <div id="ghost4"></div>
+    <audio src="sonido/pacman-music.mp3" autoplay type="audio/mpeg" id="sonido" /></audio>
+    <audio src="sonido/pacman-waka-waka.mp3" type="audio/mpeg" id="wakawaka" /></audio>
+    <audio src="sonido/pacman-eating-cherry.mp3" type="audio/mpeg" id="bono" /></audio>
+    <audio src="sonido/pacman-dies.mp3" type="audio/mpeg" id="colision" /></audio>
+  </div>
+
+  <script>
+
+    var world = [
+      [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+      [2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+      [2,1,1,2,2,1,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,1,2],
+      [2,1,1,1,2,1,1,1,1,1,1,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+      [2,1,1,1,2,1,2,2,2,1,2,1,1,1,2,1,2,1,1,1,2,1,2,1,2,1,2,1,2,2,2,4,2],
+      [2,1,1,1,2,1,2,0,2,1,2,2,1,1,2,1,2,2,1,1,2,1,2,3,2,1,2,1,2,1,1,1,2],
+      [2,1,1,1,2,1,2,2,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,2,2,1,1,1,2,2,2,1,2],
+      [2,1,2,1,2,1,2,3,1,1,2,1,1,2,2,1,2,1,4,2,2,1,1,2,1,1,1,1,1,3,2,1,2],
+      [2,1,2,2,2,1,2,2,2,1,2,1,1,3,2,1,2,1,1,1,2,1,1,2,1,1,1,1,2,2,2,1,2],
+      [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+      [2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2],
+      [2,4,1,1,1,1,1,1,1,1,1,1,4,2,0,0,0,2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+      [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+    ];
+    var score= 0;
+    var vida= 3;
+    var pacman = {
+      x:1,
+      y:1
+    }
+    var enemy = {
+      x:1,
+      y:1,
+      direccion: 1, 
+    }
+    var audio = document.getElementById('wakawaka');
+    var comida = document.getElementById('bono')
+
+    function tragaMonedas(){
+      wakawaka.play();
+    }
+    function tragaComida(){
+      bono.play();
+    }
+
+//setinterval
+    function displayWorld() {
+      var output="";
+      for(var i=0;i<world.length;i++){
+        output+="<div class='row'>";
+        for(var j=0; j<world[i].length;j++){
+          if(world[i][j]==2){
+            output+="<div class='brick'></div>"
+          } else if(world[i][j]==1){
+            output+="<div class='coin'></div>"
+          } else if(world[i][j]==0){
+            output+="<div class='empty'></div>"
+          } else if(world[i][j]==3){
+            output+="<div class='fresa'></div>"
+          } else if(world[i][j]==4){
+            output+="<div class='cereza'></div>"
+          }
+        } output+="</div>";
+      //console.log(output);
+      document.getElementById('world').innerHTML = output;
+      }
+      
+    }
+    function displayPacman(){
+      document.getElementById('pacman').style.top= pacman.y*25 +"px";
+      document.getElementById('pacman').style.left= pacman.x*25 +"px"; 
+    }
+    
+    function displayFantasma(){
+      document.getElementById(ghost1.id).style.top = (enemy.x*250) +"px";
+      document.getElementById(ghost1.id).style.left = (enemy.y*375) +"px";
+      document.getElementById(ghost2.id).style.top = (enemy.x*275) +"px";
+      document.getElementById(ghost2.id).style.left = (enemy.y*355) +"px";
+      document.getElementById(ghost3.id).style.top = (enemy.x*275) +"px";
+      document.getElementById(ghost3.id).style.left = (enemy.y*375) +"px";
+      document.getElementById(ghost4.id).style.top = (enemy.x*275) +"px";
+      document.getElementById(ghost4.id).style.left = (enemy.y*400) +"px";
+
+      /*      if(enemy[x]==pacman[x] && enemy[y]==pacman[y]){
+        pacman = displayPacman();
+      }  */
+    }
+    displayFantasma();
+        
+    function displayScore(){
+      document.getElementById('puntaje').innerHTML = 'score: '+ score;
+      document.getElementById('vida').innerHTML = 'vidas: ' + vida;
+    }
+    displayWorld();
+    displayPacman();
+    displayScore();
+
+  document.onkeydown = function(e) {
+    if(e.keyCode ==37 && world[pacman.y][pacman.x-1] != 2){
+      pacman.x --;
+      document.getElementById('pacman').style.webkitTransform="rotate("+ 180 +"deg)";
+    }  else if(e.keyCode ==39 && world[pacman.y][pacman.x+1] != 2){
+      pacman.x ++;
+      document.getElementById('pacman').style.webkitTransform="rotate("+ 0 +"deg)";
+    }  else if(e.keyCode ==38 && world[pacman.y-1][pacman.x] != 2){
+      pacman.y --;
+      document.getElementById('pacman').style.webkitTransform="rotate("+ 270 +"deg)";
+    }  else if(e.keyCode ==40 && world[pacman.y+1][pacman.x] != 2){
+      pacman.y ++;
+      document.getElementById('pacman').style.webkitTransform="rotate("+ 90 +"deg)";
+    }
+    if(world[pacman.y][pacman.x]==1){
+      world[pacman.y][pacman.x]=0;
+      score+=10;
+      tragaMonedas();
+      displayWorld();
+      displayScore();
+    }
+    if(world[pacman.y][pacman.x]==3){
+      world[pacman.y][pacman.x]=0;
+      score+=50;
+      tragaComida();
+      displayWorld();
+      displayScore();
+    }
+    if(world[pacman.y][pacman.x]==4){
+      world[pacman.y][pacman.x]=0;
+      score+=50;
+      tragaComida();
+      displayWorld();
+      displayScore();
+    }
+    if (pacman.x == enemy.x && pacman.y == enemy.y) {
+      // chocaron el pacman y el fantasma
+    }
+
+    displayPacman();
+  }
+  
+  </script>
+
+</body>
+</html>
